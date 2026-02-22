@@ -1,0 +1,7 @@
+.ssh
+.cache
+.local
+.npm
+node_modules
+.env
+.bash*

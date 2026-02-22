@@ -1,0 +1,57 @@
+version: "3.8"
+
+services:
+
+  client-a:
+    image: yourdockerhub/client-a:latest
+    networks:
+      - app-network
+    secrets:
+      - client_a_db_pass
+    deploy:
+      replicas: 3
+      restart_policy:
+        condition: on-failure
+      update_config:
+        parallelism: 1
+        delay: 10s
+
+  client-b:
+    image: yourdockerhub/client-b:latest
+    networks:
+      - app-network
+    secrets:
+      - client_b_db_pass
+    deploy:
+      replicas: 3
+      restart_policy:
+        condition: on-failure
+      update_config:
+        parallelism: 1
+        delay: 10s
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    networks:
+      - app-network
+    configs:
+      - source: nginx_conf
+        target: /etc/nginx/nginx.conf
+    deploy:
+      replicas: 1
+
+networks:
+  app-network:
+    driver: overlay
+
+secrets:
+  client_a_db_pass:
+    external: true
+  client_b_db_pass:
+    external: true
+
+configs:
+  nginx_conf:
+    external: true
